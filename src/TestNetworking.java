@@ -1,22 +1,31 @@
 import java.io.IOException;
+import java.util.Arrays;
 
 public class TestNetworking {
 
 	public static void main(String args[]) throws IOException, ClassNotFoundException, InterruptedException {
-		int port = 9876;
-		Party malaka[] = new Party[11];
-		for (int i = 0; i < 11; i++) {
-			malaka[i] = new Party(9876 + i, 0);
+
+		Party malaka[] = new Party[10];
+
+		for (int i = 0; i < 10; i++) {
+			malaka[i] = new Party(i);
 			malaka[i].start();
 		}
-		int counter = 0;
-		for (int i = 10; i > 0; i--) {
-			malaka[i].Send(9876);
-			counter++;
-		}
-		for (int i = 1; i < 11; i++) {
-			malaka[0].Send(9876 + i);
+
+		for (int i = 0; i < 10; i++) {
+			malaka[i].init_ssOut();
 		}
 
+		for (int i = 0; i < 10; i++) {
+			malaka[i].broadcast(String.valueOf(i));
+		}
+
+		for (int i = 0; i < 10; i++) {
+			Object[] objectArray = malaka[i].gather();
+			System.out.println(
+					"$" + i + "$ " + Arrays.toString(Arrays.copyOf(objectArray, objectArray.length, String[].class)));
+		}
+
+		System.out.println("ending malaka");
 	}
 }

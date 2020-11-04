@@ -7,59 +7,131 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Party extends Thread {
-    private static ServerSocket server;
-    int id;
-    int first;
-    int otherbits[] = new int[10];
-    int value = 200;
+    private static int port = 9876;
+    private static int clients = 10;
+    private ServerSocket server;
+    private Socket ssIn[] = new Socket[clients];
+    private Socket ssOut[] = new Socket[clients];
+    private ObjectInputStream ins[] = new ObjectInputStream[clients];
+    private ObjectOutputStream outs[] = new ObjectOutputStream[clients];
 
-    // socket server port on which it will listen
-    Party(int id, int first) throws IOException, ClassNotFoundException {
-        server = new ServerSocket(id);
+    private int id;
+    private Object value;
+
+    Party(int id) throws IOException {
+        this.server = new ServerSocket(port + id);
         this.id = id;
-        this.first = first;
+        this.value = "malaka" + id;
     }
 
     @Override
     public void run() {
         try {
-            Listen();
-        } catch (ClassNotFoundException | IOException e) {
+            init_ssIn();
+        } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
-    void Listen() throws IOException, ClassNotFoundException {
-        System.out.println("I am awake and " + this.id);
-        while (true) {
-            Socket socket = server.accept();
-            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-            String message = (String) ois.readObject();
-            System.out.println("Message Received: I am server" + this.id + " " + message);
-            ois.close();
-            socket.close();
-
-            if (message.equalsIgnoreCase("exit"))
-                break;
+    void init_ssIn() throws IOException {
+        for (int i = 0; i < clients; i++) {
+            if (i == id)
+                continue;
+            System.out.println("#" + this.id + " waiting for connection");
+            ssIn[i] = this.server.accept();
+            ins[i] = new ObjectInputStream(ssIn[i].getInputStream());
         }
-        System.out.println("Shutting down Socket server!!");
-        // close the ServerSocket object
-        server.close();
     }
 
-    void Send(int id) throws IOException, InterruptedException {
-        InetAddress host = InetAddress.getLocalHost();
-        Socket socket = null;
-        ObjectOutputStream oos = null;
-        ObjectInputStream ois = null;
-        socket = new Socket(host.getHostName(), id);
-        oos = new ObjectOutputStream(socket.getOutputStream());
-        // System.out.println("I will send to "+ id +" and i am "+ this.id);
-        oos.writeObject("Malaka hi, I am " + this.id + " i am sending to " + id);
-        if (this.id == 9877)
-            oos.writeObject("exit");
-        oos.close();
-        Thread.sleep(100);
+    public void init_ssOut() throws UnknownHostException, IOException {
+        for (int i = 0; i < clients; i++) {
+            if (i == id)
+                continue;
+            System.out.println("#" + this.id + " connecting to " + i);
+            ssOut[i] = new Socket(InetAddress.getLocalHost().getHostName(), port + i);
+            outs[i] = new ObjectOutputStream(ssOut[i].getOutputStream());
+        }
     }
+
+    public void broadcast(Object obj) throws IOException {
+        for (int i = 0; i < clients; i++) {
+            if (i == id)
+                continue;
+            outs[i].writeObject(obj);
+        }
+    }
+
+    public Object[] gather() throws ClassNotFoundException, IOException {
+        Object[] objs = new Object[clients];
+        objs[id] = this.value;
+
+        for (int i = 0; i < clients; i++) {
+            if (i == id)
+                continue;
+            objs[i] = ins[i].readObject();
+        }
+
+        return objs;
+    }
+
+    // void Listen() throws IOException, ClassNotFoundException,
+    // InterruptedException {
+    // System.out.println("#" + this.id + ": awake");
+
+    // boolean alive = true;
+    // while (alive) {
+    // System.out.println("#" + this.id + "waiting for connection");
+    // Socket socket = this.server.accept();
+    // ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+    // ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+
+    // String code = (String) ois.readObject();
+    // System.out.println("#" + this.id + ":{" + code + "}");
+    // // Thread.sleep(100);
+    // switch (code) {
+    // case "00":
+    // break;
+    // case "99":
+    // alive = false;
+    // break;
+    // case "01":
+    // System.out.println("#" + this.id + ":{" + code + "}");
+    // break;
+    // default:
+
+    // }
+    // // Thread.sleep(100);
+    // System.out.println("listen-write-before");
+    // // oos.writeBoolean(alive);
+    // System.out.println("listen-write");
+
+    // // oos.close();
+    // // ois.close();
+    // // socket.close();
+    // }
+    // System.out.println("#" + this.id + ": dead");
+    // this.server.close();
+    // }
+
+    // boolean Send(Object obj, int targetId) throws IOException,
+    // InterruptedException, ClassNotFoundException {
+    // Socket socket = new Socket(InetAddress.getLocalHost().getHostName(),
+    // targetId);
+    // ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+    // ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+
+    // System.out.println("send-write-before");
+    // oos.writeObject(obj);
+    // // Thread.sleep(100);
+    // System.out.println("send-read-before");
+    // // boolean response = ois.readBoolean();
+    // System.out.println("send-read");
+
+    // oos.close();
+    // ois.close();
+    // socket.close();
+    // return true;
+    // // return response;
+    // }
 }
