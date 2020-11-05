@@ -23,6 +23,59 @@ public class Party {
     private boolean ea;
     private boolean eb;
 
+    private boolean u;
+    private boolean v;
+    private boolean w;
+    public boolean[] xs;
+
+
+    Party(int numberOfLayers, int numberOfWires, int bidPrice, int index) {
+        this.numberOfLayers = numberOfLayers;
+        this.numberOfWires = numberOfWires;
+        this.bidPrice = bidPrice;
+        this.index = index;
+        this.circuit = new boolean[numberOfLayers][numberOfWires];
+    }
+
+    public void initInputWires(){
+        // TODO: Generalized solution for initialize input wires
+        xs = new boolean[3];
+
+        for (int i = 0; i < 3; i++){
+            xs[i] = random.nextBoolean();
+        }
+
+        System.out.println("Party " + index + ": " + xs[0]);
+        circuit[0][index] = xs[0];
+    }
+
+    public void setPartyIInputWires(boolean partyIInputWire, int index){
+        circuit[0][index] = partyIInputWire;
+    }
+
+    public void setTripletFromDealer(boolean u, boolean v, boolean w){
+        this.u = u;
+        this.v = v;
+        this.w = w;
+    }
+
+    public void xor(int layer, int wire) {
+        circuit[layer][wire] = circuit[layer - 1][wire] ^ circuit[layer - 1][wire + 1];
+    }
+
+    public void xorWithConstant(int layer, int wire, boolean c) {
+        circuit[layer][wire] = circuit[layer - 1][wire] ^ c;
+    }
+
+    public void not(int layer, int wire) {
+        circuit[layer][wire] = !circuit[layer - 1][wire];
+    }
+
+    public void andWithConstant(int layer, int wire, boolean c) {
+        circuit[layer][wire] = circuit[layer - 1][wire] && c;
+    }
+
+
     public boolean[][] getCircuit() {
         return circuit;
     }
@@ -86,32 +139,16 @@ public class Party {
         return numberOfWires;
     }
 
-    Party(int numberOfLayers, int numberOfWires, int bidPrice) {
-        this.numberOfLayers = numberOfLayers;
-        this.numberOfWires = numberOfWires;
-        this.bidPrice = bidPrice;
-        this.circuit = new boolean[numberOfLayers][numberOfWires];
+    public boolean isU() {
+        return u;
     }
 
-    public void initInputWires(){
-        // Generalized solution for initialize inout wires
+    public boolean isV() {
+        return v;
     }
 
-    public void xor(int layer, int wire) {
-        circuit[layer][wire] = circuit[layer - 1][wire] ^ circuit[layer - 1][wire + 1];
+    public boolean isW() {
+        return w;
     }
-
-    public void xorWithConstant(int layer, int wire, boolean c) {
-        circuit[layer][wire] = circuit[layer - 1][wire] ^ c;
-    }
-
-    public void not(int layer, int wire) {
-        circuit[layer][wire] = !circuit[layer - 1][wire];
-    }
-
-    public void andWithConstant(int layer, int wire, boolean c) {
-        circuit[layer][wire] = circuit[layer - 1][wire] && c;
-    }
-
 
 }
