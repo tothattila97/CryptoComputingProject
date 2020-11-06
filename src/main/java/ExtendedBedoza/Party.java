@@ -8,13 +8,13 @@ import java.util.List;
 public class Party {
 
     // Alternative of blood type
-    int bidPrice;
+    private int bidPrice;
     int index;
 
-    int numberOfLayers;
-    int numberOfWires;
-    public boolean[][] circuit;
-    SecureRandom random = new SecureRandom();
+    private int numberOfLayers;
+    private int numberOfWires;
+    boolean[][] circuit;
+    private SecureRandom random = new SecureRandom();
 
     private boolean d;
     private boolean da;
@@ -26,7 +26,7 @@ public class Party {
     private boolean u;
     private boolean v;
     private boolean w;
-    public boolean[] xs;
+    boolean[] xs;
 
 
     Party(int numberOfLayers, int numberOfWires, int bidPrice, int index) {
@@ -37,11 +37,11 @@ public class Party {
         this.circuit = new boolean[numberOfLayers][numberOfWires];
     }
 
-    public void initInputWires(){
+    void initInputWires() {
         // TODO: Generalized solution for initialize input wires
         xs = new boolean[3];
 
-        for (int i = 0; i < 3; i++){
+        for (int i = 0; i < 3; i++) {
             xs[i] = random.nextBoolean();
         }
 
@@ -49,17 +49,17 @@ public class Party {
         circuit[0][index] = xs[0];
     }
 
-    public void setPartyIInputWires(boolean partyIInputWire, int index){
+    void setPartyIInputWires(boolean partyIInputWire, int index) {
         circuit[0][index] = partyIInputWire;
     }
 
-    public void setTripletFromDealer(boolean u, boolean v, boolean w){
+    void setTripletFromDealer(boolean u, boolean v, boolean w) {
         this.u = u;
         this.v = v;
         this.w = w;
     }
 
-    public void xor(int layer, int wire) {
+    void xor(int layer, int wire) {
         circuit[layer][wire] = circuit[layer - 1][wire] ^ circuit[layer - 1][wire + 1];
     }
 
@@ -76,7 +76,7 @@ public class Party {
     }
 
 
-    public boolean[][] getCircuit() {
+    boolean[][] getCircuit() {
         return circuit;
     }
 
@@ -84,53 +84,54 @@ public class Party {
         this.circuit = circuit;
     }
 
-    public boolean isD() {
+    boolean isD() {
         return d;
     }
 
-    public void setD(boolean d) {
+    void setD(boolean d) {
         this.d = d;
     }
 
-    public boolean isDa() {
+    boolean isDa() {
         return da;
     }
 
-    public void setDa(boolean da) {
+    void setDa(boolean da) {
         this.da = da;
     }
 
-    public boolean isDb() {
+    boolean isDb() {
         return db;
     }
 
-    public void setDb(boolean db) {
+    void setDb(boolean db) {
         this.db = db;
     }
 
-    public boolean isE() {
+    boolean isE() {
         return e;
     }
 
-    public void setE(boolean e) {
+    void setE(boolean e) {
         this.e = e;
     }
 
-    public boolean isEa() {
+    boolean isEa() {
         return ea;
     }
 
-    public void setEa(boolean ea) {
+    void setEa(boolean ea) {
         this.ea = ea;
     }
 
-    public boolean isEb() {
+    boolean isEb() {
         return eb;
     }
 
-    public void setEb(boolean eb) {
+    void setEb(boolean eb) {
         this.eb = eb;
     }
+
     public int getNumberOfLayers() {
         return numberOfLayers;
     }
@@ -139,15 +140,15 @@ public class Party {
         return numberOfWires;
     }
 
-    public boolean isU() {
+    boolean isU() {
         return u;
     }
 
-    public boolean isV() {
+    boolean isV() {
         return v;
     }
 
-    public boolean isW() {
+    boolean isW() {
         return w;
     }
 

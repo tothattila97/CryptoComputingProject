@@ -6,11 +6,11 @@ import java.util.Random;
 
 public class Main {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
-        System.out.println("Hello");
+        System.out.println("Generalization of BeDOZa for n parties.... \n");
 
-        int numberOfParties = new Random().nextInt(10) +2;
+        int numberOfParties = new Random().nextInt(2) % 2 == 0 ? 4 : 5; //  new Random().nextInt(10) +2;
         System.out.println("BeDOZa for " + numberOfParties + " parties");
 
         Dealer dealer = new Dealer();
@@ -20,49 +20,61 @@ public class Main {
         setup(numberOfParties, partyList);
 
         boolean xorResult = partyList.get(0).xs[0];
-        for (int i = 1; i < partyList.size(); i++){
+        for (int i = 1; i < partyList.size(); i++) {
             xorResult = xorResult ^ partyList.get(i).xs[0];
         }
-        System.out.println("XOR result of parties (counted by sequentially): " + xorResult);
+        System.out.println("\nXOR result of parties (counted by sequentially): " + xorResult);
 
+        evaluateCircuit(partyList);
+    }
+
+    private static void setup(int numberOfParties, List<Party> partyList) {
+        //int numberOfLayers = numberOfParties;// % 2 == 0 ? : ;
+        for (int i = 0; i < numberOfParties; i++) {
+            Party tempParty = new Party(numberOfParties + 1, numberOfParties, 99, i);
+            partyList.add(tempParty);
+            tempParty.initInputWires();
+        }
+
+        for (Party temp :
+                partyList) {
+            for (int i = 0; i < partyList.size(); i++) {
+                if (temp.index != i)
+                    partyList.get(i).setPartyIInputWires(temp.xs[0], temp.index);
+            }
+        }
+    }
+
+    private static void evaluateCircuit(List<Party> partyList) {
         int layer = 1;
         // Count XOR for layer 1
-        for (int i = 0; i < partyList.size(); i+=2){
+        for (int i = 0; i < partyList.size(); i += 2) {
             Party party = partyList.get(i);
-            party.xor(layer, party.index);
-            partyList.get(i+1).circuit = party.circuit;
+            if (party.index + 1 >= party.circuit[0].length)
+                break;
+            else {
+                party.xor(layer, party.index);
+                partyList.get(i + 1).circuit = party.circuit;
+            }
         }
 
         // Move values to the upper wires
         int wireId = 0;
-        for (int i = 0; i < partyList.size(); i+=2){
+        for (int i = 0; i < partyList.size(); i += 2) {
             Party party = partyList.get(i);
             party.circuit[layer][wireId] = party.circuit[layer][i];
             wireId++;
         }
         layer++;
 
+        partyList.get(0).circuit[layer - 1][1] = partyList.get(2).circuit[layer - 1][1];
+        partyList.get(2).circuit[layer - 1][0] = partyList.get(0).circuit[layer - 1][0];
+        partyList.get(0).xor(layer, 0);
+        if (partyList.size() == 4) {
+            System.out.println("Circuit result: " + partyList.get(0).circuit[layer][0]);
 
-
-
-
-        System.out.println("End...");
-    }
-
-    private static void setup(int numberOfParties, List<Party> partyList) {
-        int numberOfLayers = numberOfParties;// % 2 == 0 ? : ;
-        for (int i = 0; i < numberOfParties; i++){
-            Party tempParty = new Party(numberOfLayers+1, numberOfParties, 99, i);
-            partyList.add(tempParty);
-            tempParty.initInputWires();
-        }
-
-        for (Party temp:
-                partyList) {
-            for (int i = 0; i < partyList.size(); i++){
-                if (temp.index != i)
-                    partyList.get(i).setPartyIInputWires(temp.xs[0], temp.index);
-            }
+        } else {
+            System.out.println("Circuit result: " + (partyList.get(0).circuit[layer][0] ^ partyList.get(4).circuit[4][0]));
         }
     }
 
