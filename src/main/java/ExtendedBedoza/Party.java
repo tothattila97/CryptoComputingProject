@@ -1,18 +1,16 @@
 package ExtendedBedoza;
 
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-
 import java.security.SecureRandom;
-import java.util.List;
 
 public class Party {
 
     // Alternative of blood type
-    private int bidPrice;
+    private int x;
     int index;
 
     private int numberOfLayers;
     private int numberOfWires;
+    private int numberOfParties;
     int[][] circuit;
     private SecureRandom random = new SecureRandom();
 
@@ -26,27 +24,33 @@ public class Party {
     private int u;
     private int v;
     private int w;
-    int[] xs;
+    int[] rs;
+    int r;
 
 
-    Party(int numberOfLayers, int numberOfWires, int bidPrice, int index) {
+    Party(int numberOfLayers, int numberOfWires,int numberOfParties,int x, int index) {
         this.numberOfLayers = numberOfLayers;
         this.numberOfWires = numberOfWires;
-        this.bidPrice = bidPrice;
+        this.numberOfParties = numberOfParties;
+        this.x = x;
         this.index = index;
         this.circuit = new int[numberOfLayers][numberOfWires];
     }
 
     void initInputWires() {
         // TODO: Generalized solution for initialize input wires
-        xs = new int[3];
+        rs = new int[numberOfParties-1];
 
-        for (int i = 0; i < 3; i++) {
-            xs[i] = random.nextInt(2);
+        int rSum = 0;
+        for (int i = 0; i < numberOfParties-1; i++) {
+            rs[i] = random.nextInt(2);
+            rSum += rs[i];
         }
 
-        System.out.println("Party " + index + ": " + xs[0]);
-        circuit[0][index] = xs[0];
+        r = (x + rSum) % 2;
+
+        System.out.println("Party " + index + ": " + rs[0]);
+        circuit[0][index] = rs[0];
     }
 
     void setPartyIInputWires(int partyIInputWire, int index) {

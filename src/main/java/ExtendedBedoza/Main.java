@@ -19,9 +19,9 @@ public class Main {
         List<Party> partyList = new ArrayList<>();
         setup(numberOfParties, partyList);
 
-        int xorResult = partyList.get(0).xs[0];
+        int xorResult = partyList.get(0).rs[0];
         for (int i = 1; i < partyList.size(); i++) {
-            xorResult = xorResult ^ partyList.get(i).xs[0];
+            xorResult = xorResult ^ partyList.get(i).rs[0];
         }
         System.out.println("\nXOR result of parties (counted by sequentially): " + xorResult);
 
@@ -31,7 +31,7 @@ public class Main {
     private static void setup(int numberOfParties, List<Party> partyList) {
         //int numberOfLayers = numberOfParties;// % 2 == 0 ? : ;
         for (int i = 0; i < numberOfParties; i++) {
-            Party tempParty = new Party(numberOfParties + 1, numberOfParties, 99, i);
+            Party tempParty = new Party(numberOfParties + 1, numberOfParties, numberOfParties,99, i);
             partyList.add(tempParty);
             tempParty.initInputWires();
         }
@@ -40,7 +40,7 @@ public class Main {
                 partyList) {
             for (int i = 0; i < partyList.size(); i++) {
                 if (temp.index != i)
-                    partyList.get(i).setPartyIInputWires(temp.xs[0], temp.index);
+                    partyList.get(i).setPartyIInputWires(temp.rs[0], temp.index);
             }
         }
     }
