@@ -13,20 +13,20 @@ public class Party {
 
     private int numberOfLayers;
     private int numberOfWires;
-    boolean[][] circuit;
+    int[][] circuit;
     private SecureRandom random = new SecureRandom();
 
-    private boolean d;
-    private boolean da;
-    private boolean db;
-    private boolean e;
-    private boolean ea;
-    private boolean eb;
+    private int d;
+    private int da;
+    private int db;
+    private int e;
+    private int ea;
+    private int eb;
 
-    private boolean u;
-    private boolean v;
-    private boolean w;
-    boolean[] xs;
+    private int u;
+    private int v;
+    private int w;
+    int[] xs;
 
 
     Party(int numberOfLayers, int numberOfWires, int bidPrice, int index) {
@@ -34,101 +34,136 @@ public class Party {
         this.numberOfWires = numberOfWires;
         this.bidPrice = bidPrice;
         this.index = index;
-        this.circuit = new boolean[numberOfLayers][numberOfWires];
+        this.circuit = new int[numberOfLayers][numberOfWires];
     }
 
     void initInputWires() {
         // TODO: Generalized solution for initialize input wires
-        xs = new boolean[3];
+        xs = new int[3];
 
         for (int i = 0; i < 3; i++) {
-            xs[i] = random.nextBoolean();
+            xs[i] = random.nextInt(2);
         }
 
         System.out.println("Party " + index + ": " + xs[0]);
         circuit[0][index] = xs[0];
     }
 
-    void setPartyIInputWires(boolean partyIInputWire, int index) {
+    void setPartyIInputWires(int partyIInputWire, int index) {
         circuit[0][index] = partyIInputWire;
     }
 
-    void setTripletFromDealer(boolean u, boolean v, boolean w) {
+    /*void setTripletFromDealer(boolean u, boolean v, boolean w) {
         this.u = u;
         this.v = v;
         this.w = w;
-    }
+    }*/
 
     void xor(int layer, int wire) {
         circuit[layer][wire] = circuit[layer - 1][wire] ^ circuit[layer - 1][wire + 1];
     }
 
-    public void xorWithConstant(int layer, int wire, boolean c) {
+    public void xorWithConstant(int layer, int wire, int c) {
         circuit[layer][wire] = circuit[layer - 1][wire] ^ c;
     }
 
     public void not(int layer, int wire) {
-        circuit[layer][wire] = !circuit[layer - 1][wire];
+        circuit[layer][wire] = ~circuit[layer - 1][wire];
     }
 
-    public void andWithConstant(int layer, int wire, boolean c) {
-        circuit[layer][wire] = circuit[layer - 1][wire] && c;
+    public void andWithConstant(int layer, int wire, int c) {
+        circuit[layer][wire] = circuit[layer - 1][wire] & c;
     }
 
 
-    boolean[][] getCircuit() {
+    // 1-out-of-4 OT protocol to remove the Dealer from BeDOZa
+    public int i;
+    public int[] messages;
+
+    public void generateIndexForOT(){
+        this.u = random.nextInt(2);
+        this.v = random.nextInt(2);
+        i = 2* u+v;
+    }
+
+    public int[] generateMessagesForOT(){
+        this.u = random.nextInt(2);
+        this.v = random.nextInt(2);
+        this.w = random.nextInt(2);
+
+        int M0 = (0 ^ this.u) & (0 ^ this.v) ^ this.w;
+        int M1 = (0 ^ this.u) & (1 ^ this.v) ^ this.w;
+        int M2 = (1 ^ this.u) & (0 ^ this.v) ^ this.w;
+        int M3 = (1 ^ this.u) & (1 ^ this.v) ^ this.w;
+
+        return new int[] {M0, M1, M2, M3};
+    }
+
+    public void setWFromMessagesForOT(){
+        this.w = messages[i];
+    }
+
+    public int[] getMessages() {
+        return messages;
+    }
+
+    public void setMessages(int[] messages) {
+        this.messages = messages;
+    }
+
+    int[][] getCircuit() {
         return circuit;
     }
 
-    public void setCircuit(boolean[][] circuit) {
+    public void setCircuit(int[][] circuit) {
         this.circuit = circuit;
     }
 
-    boolean isD() {
+    int isD() {
         return d;
     }
 
-    void setD(boolean d) {
+    void setD(int d) {
         this.d = d;
     }
 
-    boolean isDa() {
+    int isDa() {
         return da;
     }
 
-    void setDa(boolean da) {
+    void setDa(int da) {
         this.da = da;
     }
 
-    boolean isDb() {
+    int isDb() {
         return db;
     }
 
-    void setDb(boolean db) {
+    void setDb(int db) {
         this.db = db;
     }
 
-    boolean isE() {
+    int isE() {
         return e;
     }
 
-    void setE(boolean e) {
+    void setE(int e) {
         this.e = e;
     }
 
-    boolean isEa() {
+    int isEa() {
         return ea;
     }
 
-    void setEa(boolean ea) {
+    void setEa(int ea) {
         this.ea = ea;
     }
 
-    boolean isEb() {
+    int isEb() {
         return eb;
     }
 
-    void setEb(boolean eb) {
+    void setEb(int eb) {
         this.eb = eb;
     }
 
@@ -140,15 +175,15 @@ public class Party {
         return numberOfWires;
     }
 
-    boolean isU() {
+    int isU() {
         return u;
     }
 
-    boolean isV() {
+    int isV() {
         return v;
     }
 
-    boolean isW() {
+    int isW() {
         return w;
     }
 

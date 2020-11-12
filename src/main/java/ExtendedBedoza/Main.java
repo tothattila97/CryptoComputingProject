@@ -19,7 +19,7 @@ public class Main {
         List<Party> partyList = new ArrayList<>();
         setup(numberOfParties, partyList);
 
-        boolean xorResult = partyList.get(0).xs[0];
+        int xorResult = partyList.get(0).xs[0];
         for (int i = 1; i < partyList.size(); i++) {
             xorResult = xorResult ^ partyList.get(i).xs[0];
         }
@@ -79,10 +79,14 @@ public class Main {
     }
 
 
-    static void andOfTwoWires(Party party1, Party party2, Dealer dealer, int layer, int wire) {
-        dealer.generateTriplets();
-        party1.setTripletFromDealer(dealer.ua, dealer.va, dealer.wa);
-        party2.setTripletFromDealer(dealer.ub, dealer.vb, dealer.wb);
+    static void andOfTwoWires(Party party1, Party party2, int layer, int wire) {
+        //dealer.generateTriplets();
+        //party1.setTripletFromDealer(dealer.ua, dealer.va, dealer.wa);
+        //party2.setTripletFromDealer(dealer.ub, dealer.vb, dealer.wb);
+
+        party1.generateIndexForOT();
+        party1.setMessages(party2.generateMessagesForOT());
+        party1.setWFromMessagesForOT();
 
         // Run sub protocol: compute d = x XOR u and e = y XOR v
         party1.setDa(party1.getCircuit()[layer - 1][wire] ^ party1.isU());
@@ -103,6 +107,6 @@ public class Main {
 
         //Run sub protocol: calculate z value : z = [w] XOR e AND [x] XOR d AND [y] XOR e and d
         party1.circuit[layer][wire] = party1.isW() ^ (party1.isE() & party1.circuit[layer - 1][wire]) ^ (party1.isD() & party1.circuit[layer - 1][wire + 1]) ^ (party1.isE() & party1.isD());
-        party2.circuit[layer][wire] = party2.isW() ^ (party2.isE() & party2.circuit[layer - 1][wire]) ^ (party2.isD() & party2.circuit[layer - 1][wire + 1]);  //^ (bob.isE() & bob.isD())
+        party2.circuit[layer][wire] = party2.isW() ^ (party2.isE() & party2.circuit[layer - 1][wire]) ^ (party2.isD() & party2.circuit[layer - 1][wire + 1]);  //^ (party2.isE() & party2.isD())
     }
 }
