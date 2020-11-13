@@ -1,6 +1,7 @@
 package ExtendedBedoza;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -13,15 +14,15 @@ public class Main {
         int numberOfParties = new Random().nextInt(2) % 2 == 0 ? 4 : 5; //  new Random().nextInt(10) +2;
         System.out.println("BeDOZa for " + numberOfParties + " parties");
 
-        Dealer dealer = new Dealer();
-        dealer.generateTriplets();
+        //Dealer dealer = new Dealer();
+        //dealer.generateTriplets();
 
         List<Party> partyList = new ArrayList<>();
         setup(numberOfParties, partyList);
 
-        int xorResult = partyList.get(0).rs[0];
+        int xorResult = partyList.get(0).sentRs[partyList.get(0).index];
         for (int i = 1; i < partyList.size(); i++) {
-            xorResult = xorResult ^ partyList.get(i).rs[0];
+            xorResult = xorResult ^ partyList.get(i).sentRs[partyList.get(i).index];
         }
         System.out.println("\nXOR result of parties (counted by sequentially): " + xorResult);
 
@@ -29,9 +30,8 @@ public class Main {
     }
 
     private static void setup(int numberOfParties, List<Party> partyList) {
-        //int numberOfLayers = numberOfParties;// % 2 == 0 ? : ;
         for (int i = 0; i < numberOfParties; i++) {
-            Party tempParty = new Party(numberOfParties + 1, numberOfParties, numberOfParties,99, i);
+            Party tempParty = new Party(numberOfParties + 1, numberOfParties, numberOfParties, new Random().nextInt(2), i);
             partyList.add(tempParty);
             tempParty.initInputWires();
         }
@@ -40,8 +40,12 @@ public class Main {
                 partyList) {
             for (int i = 0; i < partyList.size(); i++) {
                 if (temp.index != i)
-                    partyList.get(i).setPartyIInputWires(temp.rs[0], temp.index);
+                    partyList.get(i).setPartyIInputWires(temp.sentRs[i], temp.index);
             }
+        }
+
+        for (int i = 0; i < partyList.size(); i++){
+            System.out.println("Party " + partyList.get(i).index + ": \t"+ Arrays.toString(partyList.get(i).circuit[0]));
         }
     }
 

@@ -24,7 +24,8 @@ public class Party {
     private int u;
     private int v;
     private int w;
-    int[] rs;
+    int[] sentRs;
+    int[] incomingRs;
     int r;
 
 
@@ -39,18 +40,33 @@ public class Party {
 
     void initInputWires() {
         // TODO: Generalized solution for initialize input wires
-        rs = new int[numberOfParties-1];
+        sentRs = new int[numberOfParties];
+        incomingRs = new int[numberOfParties];
 
         int rSum = 0;
-        for (int i = 0; i < numberOfParties-1; i++) {
-            rs[i] = random.nextInt(2);
-            rSum += rs[i];
+        for (int i = 0; i < numberOfParties; i++) {
+            if (i != index) {
+                sentRs[i] = random.nextInt(2);
+                rSum += sentRs[i];
+            }
         }
 
         r = (x + rSum) % 2;
+        sentRs[index] = r;
+        incomingRs[index] = r;
 
-        System.out.println("Party " + index + ": " + rs[0]);
-        circuit[0][index] = rs[0];
+        for (int i = 0;i< numberOfParties; i++){
+            if (i == 0)
+                System.out.print("Party " + index + " ("+ x +"):\t" + sentRs[i] + "\t");
+            else if (i == numberOfParties -1)
+                System.out.println(sentRs[i]);
+            else
+                System.out.print(sentRs[i] + "\t");
+
+        }
+
+        //System.out.println("Party " + index + ": " + sentRs[index]);
+        circuit[0][index] = sentRs[index];
     }
 
     void setPartyIInputWires(int partyIInputWire, int index) {
