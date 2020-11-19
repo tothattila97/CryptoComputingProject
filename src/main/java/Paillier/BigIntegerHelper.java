@@ -12,6 +12,5 @@ public class BigIntegerHelper {
         result = result.multiply(b.abs());
 
         return result;
-
     }
 }

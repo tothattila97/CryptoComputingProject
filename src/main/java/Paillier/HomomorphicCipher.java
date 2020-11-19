@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class HomomorphicCipher {
 
-    private KeyPair keyPair;
+    private final KeyPair keyPair;
 
     public HomomorphicCipher(KeyPair keyPair) {
         this.keyPair = keyPair;
