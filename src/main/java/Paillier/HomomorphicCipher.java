@@ -54,4 +54,8 @@ public class HomomorphicCipher {
 
         return p;
     }
+
+    public KeyPair getKeyPair() {
+        return keyPair;
+    }
 }
